@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image:url('https://t4.ftcdn.net/jpg/02/89/04/39/360_F_289043915_62E4CSfMrMJeW3JFYnaYUcXZLmgV6iK3.jpg');
+            background-repeat:no-repeat;
+            background-size:cover;
+            background-position:center;
+            width:100vw;
+            height:100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            padding: 10px;
+            cursor: move;
+        }
+        button {
+            margin: 5px;
+        }
+        h1{
+            color: white;
+            border:5px solid rgb(136, 41, 7);
+            background-color:rgb(93, 93, 189);
+            font-weight:bold;
+            font-size:40px;
+        }
+        h3{
+            border:2px solid black;
+            background-color:white;
+            border-radius:12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Name: Navya CB23152:) <br> Week 4: DOM Manipulation</h3>
+        <h1>To-Do List</h1>
+        <div id="categories">
+            <button class="category" onclick="filterTasks('all')">All</button>
+            <button class="category" onclick="filterTasks('work')">Work</button>
+            <button class="category" onclick="filterTasks('personal')">Personal</button>
+            <button class="category" onclick="filterTasks('shopping')">Shopping</button>
+        </div>
+        <ul id="tasks" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+        <div id="addTask">
+            <input type="text" id="taskInput" placeholder="New Task">
+            <input type="date" id="dueDate">
+            <select id="category">
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="shopping">Shopping</option>
+            </select>
+            <button onclick="addTask()">Add Task</button>
+        </div>
+    </div>
+    <script>
+        let tasks = [];
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+        function drop(event) {
+            event.preventDefault();
+            const taskId = event.dataTransfer.getData("text");
+            const droppedTask = document.getElementById(taskId);
+            const newList = event.target.tagName === "UL" ? event.target : event.target.closest("ul");
+            newList.appendChild(droppedTask);
+        }
+        function addTask() {
+            const taskInput = document.getElementById("taskInput").value;
+            const dueDate = document.getElementById("dueDate").value;
+            const category = document.getElementById("category").value;
+
+            if (taskInput === "") return;
+
+            const task = document.createElement("li");
+            task.innerHTML = `<strong>${taskInput}</strong><br>Due Date: ${dueDate}<br>Category: ${category}`;
+            task.draggable = true;
+            task.id = `task${tasks.length + 1}`;
+            task.setAttribute("ondragstart", "drag(event)");
+
+            document.getElementById("tasks").appendChild(task);
+            tasks.push({ id: task.id, category, dueDate });
+        }
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+        function filterTasks(category) {
+            const taskList = document.getElementById("tasks");
+            taskList.innerHTML = "";
+
+            tasks.filter(task => category === "all" || task.category === category)
+                .forEach(task => {
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `<strong>${task.id}</strong><br>Due Date: ${task.dueDate}<br>Category: ${task.category}`;
+                    listItem.draggable = true;
+                    listItem.id = task.id;
+                    listItem.setAttribute("ondragstart", "drag(event)");
+
+                    taskList.appendChild(listItem);
+                });
+        }
+    </script>
+</body>
+</html>
